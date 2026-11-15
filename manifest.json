@@ -1,0 +1,42 @@
+{
+  "manifest_version": 3,
+  "name": "Sideline: fantasy box for live games",
+  "version": "0.1.0",
+  "description": "Your fantasy lineup and touchdowns over the game, timed to your stream so nothing is spoiled. Fits YouTube TV multiview.",
+  "icons": { "16": "icons/16.png", "32": "icons/32.png", "48": "icons/48.png", "128": "icons/128.png" },
+  "permissions": ["storage", "scripting", "activeTab"],
+  "host_permissions": [
+    "https://site.api.espn.com/*",
+    "https://sports.core.api.espn.com/*",
+    "https://api.sleeper.app/*",
+    "https://lm-api-reads.fantasy.espn.com/*",
+    "https://a.espncdn.com/*"
+  ],
+  "background": { "service_worker": "src/bg.js" },
+  "action": { "default_title": "Sideline", "default_popup": "src/popup.html", "default_icon": { "16": "icons/16.png", "32": "icons/32.png" } },
+  "options_ui": { "page": "src/options.html", "open_in_tab": true },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://tv.youtube.com/*",
+        "https://www.hulu.com/*",
+        "https://www.fubo.tv/*",
+        "https://fubo.tv/*",
+        "https://watch.sling.com/*",
+        "https://stream.directv.com/*",
+        "https://www.peacocktv.com/*",
+        "https://www.primevideo.com/*",
+        "https://www.amazon.com/gp/video/*",
+        "https://www.espn.com/watch/*",
+        "https://www.nfl.com/plus/*",
+        "https://www.paramountplus.com/*"
+      ],
+      "js": [
+        "src/core/scoring.js", "src/core/espn.js", "src/core/sleeper.js", "src/core/espnfantasy.js", "src/core/leagues.js",
+        "src/core/settings.js", "src/core/sample.js", "src/core/engine.js",
+        "src/ui/multiview.js", "src/ui/overlay.css.js", "src/ui/overlay.js", "src/content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}

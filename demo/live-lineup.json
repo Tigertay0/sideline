@@ -1,0 +1,127 @@
+{
+ "game": {
+  "id": "401873053",
+  "state": "in",
+  "detail": "Halftime",
+  "teams": [
+   {
+    "id": "8",
+    "abbr": "DET",
+    "score": 21,
+    "home": true
+   },
+   {
+    "id": "17",
+    "abbr": "NE",
+    "score": 3,
+    "home": false
+   }
+  ]
+ },
+ "starters": [
+  {
+   "key": "QB3046779",
+   "espnId": "3046779",
+   "name": "Jared Goff",
+   "pos": "QB",
+   "team": "DET",
+   "slot": "QB"
+  },
+  {
+   "key": "RB4429795",
+   "espnId": "4429795",
+   "name": "Jahmyr Gibbs",
+   "pos": "RB",
+   "team": "DET",
+   "slot": "RB"
+  },
+  {
+   "key": "WR4374302",
+   "espnId": "4374302",
+   "name": "Amon-Ra St. Brown",
+   "pos": "WR",
+   "team": "DET",
+   "slot": "WR"
+  },
+  {
+   "key": "WR4426388",
+   "espnId": "4426388",
+   "name": "Jameson Williams",
+   "pos": "WR",
+   "team": "DET",
+   "slot": "WR"
+  },
+  {
+   "key": "K4689936",
+   "espnId": "4689936",
+   "name": "Jake Bates",
+   "pos": "K",
+   "team": "DET",
+   "slot": "K"
+  },
+  {
+   "key": "DEFDET",
+   "espnId": null,
+   "name": "DET D/ST",
+   "pos": "DEF",
+   "team": "DET",
+   "slot": "DEF"
+  },
+  {
+   "key": "QB4431452",
+   "espnId": "4431452",
+   "name": "Drake Maye",
+   "pos": "QB",
+   "team": "NE",
+   "slot": "QB"
+  },
+  {
+   "key": "RB4431431",
+   "espnId": "4431431",
+   "name": "Corey Kiner",
+   "pos": "RB",
+   "team": "NE",
+   "slot": "RB"
+  },
+  {
+   "key": "WR2991662",
+   "espnId": "2991662",
+   "name": "Mack Hollins",
+   "pos": "WR",
+   "team": "NE",
+   "slot": "WR"
+  },
+  {
+   "key": "WR3046439",
+   "espnId": "3046439",
+   "name": "Hunter Henry",
+   "pos": "WR",
+   "team": "NE",
+   "slot": "WR"
+  },
+  {
+   "key": "WR4831959",
+   "espnId": "4831959",
+   "name": "Eli Raridon",
+   "pos": "WR",
+   "team": "NE",
+   "slot": "WR"
+  },
+  {
+   "key": "K4569923",
+   "espnId": "4569923",
+   "name": "Andy Borregales",
+   "pos": "K",
+   "team": "NE",
+   "slot": "K"
+  },
+  {
+   "key": "DEFNE",
+   "espnId": null,
+   "name": "NE D/ST",
+   "pos": "DEF",
+   "team": "NE",
+   "slot": "DEF"
+  }
+ ]
+}

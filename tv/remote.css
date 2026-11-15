@@ -1,0 +1,7 @@
+.remote h1 .mute{font:600 14px/1 var(--ff);margin-left:8px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+@media (max-width:480px){.grid3{grid-template-columns:1fr}}
+.mvmap{position:relative;width:100%;max-width:420px;aspect-ratio:16/9;background:#05070d;border-radius:12px;overflow:hidden;margin:8px 0 12px}
+.mvmap:empty{display:none}
+.mvmap b{position:absolute;display:grid;place-items:center;border:2px solid var(--bg);background:var(--raise);color:var(--text);font:700 18px/1 var(--ff);border-radius:6px}
+.mvmap b.set{background:var(--accent);color:#160a03}

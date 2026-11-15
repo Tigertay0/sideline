@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Sideline settings</title>
+  <link rel="stylesheet" href="ui/pages.css">
+</head>
+<body class="options">
+  <header>
+    <h1>Sideline</h1>
+    <p>Your fantasy lineup and touchdowns over the game, timed to your stream so nothing is spoiled. Works on YouTube TV (including multiview) and other streaming sites in Chrome.</p>
+  </header>
+
+  <section class="card">
+    <h2>Your leagues</h2>
+    <label class="f"><span>Sleeper username (the @name under your picture, not your team name)</span>
+      <div class="row"><input id="sleeper" type="text" autocomplete="off" spellcheck="false" placeholder="e.g. ballknower"><button id="sleeperGo" class="primary">Find my leagues</button></div></label>
+    <p id="sleeperMsg" role="status"></p>
+    <label class="f"><span>ESPN league: open fantasy.espn.com, open your league, paste the address bar</span>
+      <div class="row"><input id="espnUrl" type="text" autocomplete="off" spellcheck="false" placeholder="https://fantasy.espn.com/football/team?leagueId=…"><button id="espnGo" class="primary">Find my league</button></div></label>
+    <div class="row" id="espnPick" hidden><select id="espnTeam" aria-label="Your ESPN team"></select><button id="espnAdd" class="primary">Add this league</button></div>
+    <p id="espnMsg" role="status"></p>
+    <ul id="espnList" class="list"></ul>
+    <p>Private ESPN league? Sign in to espn.com in this same Chrome first. Sideline uses your own sign-in; it never sees your password.</p>
+  </section>
+
+  <section class="card">
+    <h2>What you watch on</h2>
+    <label class="f"><span>Your points wait for this app's delay, so the box never shows a play before you see it</span><select id="stream"></select></label>
+    <div class="row"><div><span class="big" id="delay"></span> <span class="mute">behind live</span></div>
+      <button id="minus">−5 s</button><button id="plus">+5 s</button><button id="reset">Reset</button></div>
+    <p>Off by a few seconds? Nudge it. Press a nudge button until a touchdown on the box lands with the play on your screen.</p>
+  </section>
+
+  <section class="card">
+    <h2>Look</h2>
+    <div class="f" role="group" aria-label="Corner"><span>Corner</span><div class="seg" id="corner"></div></div>
+    <div class="f" role="group" aria-label="Corner in multiview (auto picks the one that covers the least video)"><span>Corner in multiview (auto picks the one that covers the least video)</span><div class="seg" id="mvCorner"></div></div>
+    <div class="f" role="group" aria-label="Size"><span>Size</span><div class="seg" id="size"></div></div>
+    <div class="f" role="group" aria-label="Show starters"><span>Show starters</span><div class="seg" id="view"></div></div>
+    <div class="f" role="group" aria-label="Moments"><span>Moments</span><div class="seg" id="moments"></div></div>
+    <div class="f"><div class="seg"><label><input type="checkbox" id="photos"> Player photos (from ESPN)</label><label><input type="checkbox" id="enabled"> Sideline on</label></div></div>
+  </section>
+
+  <p class="mute">Independent project, not connected to the NFL, ESPN, Sleeper or Google. Win chance is a rough estimate.</p>
+
+  <script src="core/settings.js"></script>
+  <script src="core/scoring.js"></script>
+  <script src="core/sleeper.js"></script>
+  <script src="core/espnfantasy.js"></script>
+  <script src="core/leagues.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>

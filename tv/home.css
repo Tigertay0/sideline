@@ -1,0 +1,29 @@
+/* The TV's own screen: read from across the room, driven by a D-pad. Same look as the box: flat surfaces, one type family, orange only on small marks. */
+@font-face{font-family:SidelineArchivo;src:url(../src/ui/fonts/archivo.woff2) format("woff2");font-weight:100 900;font-stretch:62% 125%;font-display:swap}
+:root{--bg:#0e1016;--card:#1b1f2a;--raise:#2a2f3c;--text:#f4f5f8;--mute:#a0a6b6;--accent:#ff6a1f;--ok:#4be3a1;--bad:#ff5a68;--ff:"SidelineArchivo","Segoe UI",Roboto,system-ui,sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:500 26px/1.4 var(--ff)}
+main{padding:72px 120px}
+h1{margin:0;font:700 64px/1 var(--ff);letter-spacing:-.03em}
+h1 i{font-style:normal}
+header p{margin:16px 0 40px;color:var(--mute);max-width:1200px}
+.steps{list-style:none;margin:0;padding:0;counter-reset:step;display:grid;gap:24px}
+.steps li>button,.steps li>.qr{align-self:center}
+.steps li{counter-increment:step;display:flex;align-items:flex-start;gap:40px;justify-content:space-between;background:var(--card);border-radius:24px;padding:32px 40px 32px 112px;position:relative}
+.steps li::before{content:counter(step);position:absolute;left:40px;top:32px;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;
+  background:var(--raise);font:700 26px/1 var(--ff)}
+.steps li.done::before{content:"✓";background:var(--ok);color:#06140d}
+.steps li.todo::before{background:var(--accent);color:#160a03}
+h2{margin:0 0 8px;font:700 34px/1.2 var(--ff)}
+.steps p{margin:0;color:var(--mute)}
+.url{margin-top:16px!important;color:var(--text)!important;font:700 30px/1.2 "Roboto Mono",Consolas,monospace;letter-spacing:.02em}
+button{flex:none;font:700 28px/1 var(--ff);color:var(--text);background:var(--raise);border:0;border-radius:16px;padding:24px 32px;cursor:pointer;
+  transition:transform 250ms cubic-bezier(.22,1,.36,1),background-color 150ms ease}
+button:focus{outline:none;background:var(--text);color:#10131a;transform:scale(1.04)}
+.qr{flex:none;background:#fff;border-radius:16px;padding:16px;line-height:0}
+.qr img,.qr svg{width:240px;height:240px;display:block}
+.foot{margin:32px 0 0;color:var(--mute);font-size:22px}
+.small{margin-top:16px!important;font-size:22px}
+button.link{font-size:22px;padding:12px 16px;border-radius:12px;margin-left:8px}
+.foot.err{color:var(--bad)}
+@media (prefers-reduced-motion:reduce){button{transition:none}}

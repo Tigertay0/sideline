@@ -1,0 +1,10 @@
+{
+  "name": "sideline",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Fantasy lineup and touchdowns over the game in Chrome, timed to your stream. Fits YouTube TV multiview.",
+  "scripts": {
+    "test": "node --test test/core.test.js test/multiview.test.js",
+    "demo": "python -m http.server 8137 --bind 127.0.0.1"
+  }
+}

@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Sideline demo: multiview harness</title>
+  <style>
+    @font-face{font-family:SidelineArchivo;src:url(../src/ui/fonts/archivo.woff2) format("woff2");font-weight:100 900;font-stretch:62% 125%;font-display:swap}
+    html,body{margin:0;height:100%;background:#000;color:#fff;font:14px system-ui,sans-serif}
+    #grid{position:fixed;inset:0;display:grid;gap:6px;padding:6px}
+    .tile{position:relative;border-radius:6px;overflow:hidden;background:linear-gradient(135deg,#1b2a49,#0c1426)} .tile video{position:absolute;inset:0;width:100%;height:100%;background:transparent}
+    .tile:nth-child(2){background:linear-gradient(135deg,#3a2a49,#150c26)} .tile:nth-child(3){background:linear-gradient(135deg,#2a4936,#0c2616)} .tile:nth-child(4){background:linear-gradient(135deg,#49402a,#261f0c)}
+    .tile .net{position:absolute;top:10px;right:12px;font:800 18px/1 system-ui;opacity:.8}
+    .tile .live{position:absolute;top:10px;left:12px;background:#e11;padding:3px 8px;border-radius:4px;font-weight:800;font-size:11px}
+  </style>
+</head>
+<body>
+  <div id="grid"></div>
+  <button id="fs" style="position:fixed;right:10px;bottom:10px;z-index:5" onclick="document.getElementById('grid').requestFullscreen()">Fullscreen the grid</button>
+  <script>
+    // ?layout=one|two|four  ?delay=3  ?corner=bl  ?view=live|all
+    const q = new URLSearchParams(location.search);
+    const layout = q.get('layout') || 'four';
+    const nets = { one: ['FOX'], two: ['FOX', 'CBS'], four: ['FOX', 'CBS', 'NBC', 'ESPN'] }[layout];
+    const grid = document.getElementById('grid');
+    grid.style.gridTemplateColumns = layout === 'one' ? '1fr' : '1fr 1fr';
+    grid.style.gridTemplateRows = layout === 'four' ? '1fr 1fr' : '1fr';
+    nets.forEach((n) => {
+      const t = document.createElement('div');
+      t.className = 'tile';
+      t.innerHTML = `<video muted playsinline></video><span class="live">LIVE</span><span class="net">${n}</span>`;
+      grid.appendChild(t);
+    });
+    window.__sidelineOpenShadow = true;   // harness only: lets the checks look inside the overlay
+    window.__cfg = { enabled: true, sleeperUser: 'demo', espnLeagues: [], stream: 'cable', nudge: Number(q.get('delay') || 3) - 7,
+      corner: q.get('corner') || 'bl', mvCorner: q.get('mv') || 'auto', size: q.get('size') || 'M', view: q.get('view') || 'live', photos: q.get('photos') !== '0',
+      moments: { td: true, fg: true, big: true, bad: true, play: false } };
+  </script>
+  <script src="shim.js"></script>
+  <script src="fakeapi.js"></script>
+  <script>if (new URLSearchParams(location.search).has('live')) document.write('<script src="live.js"><' + '/script>');</script>
+  <script src="../src/core/scoring.js"></script>
+  <script src="../src/core/espn.js"></script>
+  <script src="../src/core/sleeper.js"></script>
+  <script src="../src/core/espnfantasy.js"></script>
+  <script src="../src/core/leagues.js"></script>
+  <script src="../src/core/settings.js"></script>
+  <script src="../src/core/sample.js"></script>
+  <script src="../src/core/engine.js"></script>
+  <script src="../src/ui/multiview.js"></script>
+  <script src="../src/ui/overlay.css.js"></script>
+  <script src="../src/ui/overlay.js"></script>
+  <script src="../src/content.js"></script>
+</body>
+</html>

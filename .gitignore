@@ -1,0 +1,9 @@
+# signing keys and build output
+*.keystore
+*.apk
+*.idsig
+android/build/
+dist/
+node_modules/
+# design-process screenshots (not part of the app)
+.design/
