@@ -23,7 +23,8 @@ http.createServer(async (req, res) => {
   }
   const rel = decodeURIComponent(url.pathname);
   const file = path.join(ROOT, rel);
-  if (!file.startsWith(ROOT) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) { res.writeHead(404); return res.end('Not found'); }
+  // startsWith(ROOT) alone would also accept a sibling folder whose name begins with it, so the separator is part of the check
+  if (!file.startsWith(ROOT + path.sep) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) { res.writeHead(404); return res.end('Not found'); }
   res.writeHead(200, { 'Content-Type': TYPES[path.extname(file).slice(1)] || 'application/octet-stream', 'Cache-Control': 'no-store' });
   return res.end(fs.readFileSync(file));
 }).listen(8137, '127.0.0.1', () => process.stdout.write('demo server on http://127.0.0.1:8137\n'));

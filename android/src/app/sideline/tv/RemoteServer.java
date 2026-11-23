@@ -193,6 +193,8 @@ final class RemoteServer {
         boolean publicGet = r.method.equals("GET") && (r.path.equals("/cards.json") || r.path.equals("/cards/match.png"));
         if (origin != null && !publicGet && !origin.equals("http://" + hostHeader)) return "Cross-site request";
         if (r.length < 0 || r.length > MAX_BODY) return "Too large";
+        // Only Content-Length bodies are read, so say so rather than silently treating a chunked body as empty.
+        if (r.headers.containsKey("transfer-encoding")) return "Send a Content-Length";
         if (!r.path.startsWith("/api/")) return null;
         Long until = lockedUntil.get(peer);
         if (until != null && until > System.currentTimeMillis()) return "Wrong code too many times. Wait 10 minutes.";
@@ -285,8 +287,10 @@ final class RemoteServer {
             sendJson(out, 400, error(url.getHost() + " is not something Sideline asks for"));
             return;
         }
-        HttpURLConnection c = (HttpURLConnection) url.openConnection();
+        boolean answered = false;
+        HttpURLConnection c = null;
         try {
+            c = (HttpURLConnection) url.openConnection();
             c.setInstanceFollowRedirects(false);
             c.setConnectTimeout(UPSTREAM_TIMEOUT_MS);
             c.setReadTimeout(UPSTREAM_TIMEOUT_MS);
@@ -298,6 +302,7 @@ final class RemoteServer {
             String head = "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nCache-Control: no-store\r\nX-Content-Type-Options: nosniff\r\n"
                     + (date == null ? "" : "X-Upstream-Date: " + date.replaceAll("[\r\n]", "") + "\r\n") + "Connection: close\r\n\r\n";
             out.write(bytes(head));
+            answered = true;
             long sent = 0;
             byte[] buf = new byte[16384];
             try (InputStream in = c.getInputStream()) {
@@ -310,8 +315,10 @@ final class RemoteServer {
             out.flush();
         } catch (IOException e) {
             Log.w(TAG, "proxy failed for " + url.getHost(), e);
+            // Nothing sent yet (DNS, refused, TLS, timeout before headers): answer like the non-200 path instead of dropping the socket.
+            if (!answered) sendJson(out, 502, error(url.getHost() + " did not answer"));
         } finally {
-            c.disconnect();
+            if (c != null) c.disconnect();
         }
     }
 

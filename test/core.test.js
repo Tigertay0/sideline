@@ -578,3 +578,36 @@ test('engine: an unrelated old play is not borrowed for a later change', async (
   r.timers.advance(10);
   assert.equal(r.cards[0].line, 'Points added', 'no recent play to describe it, so it stays generic');
 });
+
+test('engine: reloading the same leagues does not reopen a game that is already final', async () => {
+  const clock = { t: W };
+  const summary = summaryPayload({});
+  summary.header.competitions[0].status.type.state = 'post';
+  let fetched = 0;
+  const starters = [{ key: 'p77', espnId: '77', name: 'Sam Receiver', pos: 'WR', team: 'DET', slot: 'WR' }];
+  const league = (id) => ({ id, platform: 'sleeper', source: 'box', label: id, name: id, scoring: PPR, week: 10,
+    me: { name: 'Me', starters }, opp: null });
+  const engine = createEngine({
+    get: async (url) => {
+      if (url.includes('sports.core')) return { items: [] };
+      if (url.includes('/scoreboard')) return sbPayload('in');
+      fetched += 1;
+      return summary;
+    },
+    now: () => clock.t, timer: fakeTimers(clock), settings: () => ({ delaySec: 0, moments: {} }),
+    onFrame: () => {}, onCard: () => {},
+  });
+  engine.setLeagues([league('sleeper:1')]);
+  await engine.tick();
+  assert.equal(fetched, 1, 'the game is read once, and comes back final');
+  await engine.tick();
+  assert.equal(fetched, 1, 'a final game is not read again');
+
+  engine.setLeagues([league('sleeper:1')]);                       // the 60 s error retry reloads the same leagues
+  await engine.tick();
+  assert.equal(fetched, 1, 'reloading the same leagues leaves it closed');
+
+  engine.setLeagues([league('sleeper:1'), league('sleeper:2')]);   // a new league may have starters in that game
+  await engine.tick();
+  assert.equal(fetched, 2, 'a league that was just added reopens it once');
+});

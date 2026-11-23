@@ -15,27 +15,35 @@ final class Store {
     private static final java.util.Set<String> KEYS = new java.util.HashSet<>(java.util.Arrays.asList(
             "enabled", "sleeperUser", "espnLeagues", "stream", "nudge", "corner", "mvCorner", "size", "view", "photos", "moments", "mv"));
 
+    // The app makes a new Store wherever it needs one (service, activity, boot receiver) over the same preferences file, so the
+    // read-modify-write in merge() and the check-then-generate in token() have to lock on something all of them share.
+    private static final Object LOCK = new Object();
+
     private final SharedPreferences prefs;
 
     Store(Context context) {
         prefs = context.getSharedPreferences("sideline", Context.MODE_PRIVATE);
     }
 
-    synchronized String settings() {
-        return prefs.getString("settings", "{}");
+    String settings() {
+        synchronized (LOCK) {
+            return prefs.getString("settings", "{}");
+        }
     }
 
     /** Shallow-merges a patch from the phone into the saved settings and returns the result, re-serialized (so it is valid JSON). */
-    synchronized String merge(String patchJson) throws JSONException {
-        JSONObject current = new JSONObject(settings());
-        JSONObject patch = new JSONObject(patchJson);
-        for (java.util.Iterator<String> it = patch.keys(); it.hasNext(); ) {
-            String key = it.next();
-            if (KEYS.contains(key)) current.put(key, patch.get(key));          // unknown keys are dropped, so settings cannot grow without bound
+    String merge(String patchJson) throws JSONException {
+        synchronized (LOCK) {
+            JSONObject current = new JSONObject(settings());
+            JSONObject patch = new JSONObject(patchJson);
+            for (java.util.Iterator<String> it = patch.keys(); it.hasNext(); ) {
+                String key = it.next();
+                if (KEYS.contains(key)) current.put(key, patch.get(key));      // unknown keys are dropped, so settings cannot grow without bound
+            }
+            String merged = current.toString();
+            prefs.edit().putString("settings", merged).apply();
+            return merged;
         }
-        String merged = current.toString();
-        prefs.edit().putString("settings", merged).apply();
-        return merged;
     }
 
     boolean enabled() {
@@ -60,19 +68,23 @@ final class Store {
     }
 
     /** A new pairing code: every phone has to scan the QR code again. */
-    synchronized void rotateToken() {
-        prefs.edit().remove("token").commit();
+    void rotateToken() {
+        synchronized (LOCK) {
+            prefs.edit().remove("token").commit();
+        }
     }
 
-    synchronized String token() {
-        String code = prefs.getString("token", null);
-        if (code == null || code.length() != CODE_LENGTH) {
-            SecureRandom random = new SecureRandom();
-            StringBuilder b = new StringBuilder();
-            for (int i = 0; i < CODE_LENGTH; i++) b.append(CODE_ALPHABET.charAt(random.nextInt(CODE_ALPHABET.length())));
-            code = b.toString();
-            prefs.edit().putString("token", code).apply();
+    String token() {
+        synchronized (LOCK) {
+            String code = prefs.getString("token", null);
+            if (code == null || code.length() != CODE_LENGTH) {
+                SecureRandom random = new SecureRandom();
+                StringBuilder b = new StringBuilder();
+                for (int i = 0; i < CODE_LENGTH; i++) b.append(CODE_ALPHABET.charAt(random.nextInt(CODE_ALPHABET.length())));
+                code = b.toString();
+                prefs.edit().putString("token", code).apply();
+            }
+            return code;
         }
-        return code;
     }
 }

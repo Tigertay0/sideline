@@ -137,5 +137,8 @@
     return false;
   });
 
-  boot().catch((e) => { if (overlay) overlay.setStatus({ ok: false, error: e.message }); });
+  boot().catch((e) => {
+    console.error('Sideline failed to start', e);                 // boot can throw before the overlay exists: without this there is no signal at all
+    if (overlay) overlay.setStatus({ ok: false, error: e.message });
+  });
 })();
