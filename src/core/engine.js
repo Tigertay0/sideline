@@ -97,7 +97,15 @@
   }
 
   /** Call a host callback without letting its exception kill the loop that called it. */
-  function safe(fn, arg) { try { if (fn) fn(arg); } catch (e) { /* the host's own bug: it surfaces there, the engine keeps running */ } }
+  let hostBugLogged = false;
+  function safe(fn, arg) {
+    try {
+      if (fn) fn(arg);
+    } catch (e) {
+      // The host's own bug: the engine keeps running, but say it once so it is findable (every frame would flood the console).
+      if (!hostBugLogged) { hostBugLogged = true; console.error('Sideline: a host callback threw', e); }
+    }
+  }
 
   /**
    * @param {{ get: Function, now?: Function, timer?: {set: Function, clear: Function}, settings: () => {delaySec: number, moments: object},
@@ -416,10 +424,13 @@
     /* ---- public ---- */
     return {
       setLeagues(next) {
+        const added = next.some((L) => !addedAt.has(L.id));
         for (const L of next) if (!addedAt.has(L.id)) addedAt.set(L.id, now());
         leagues = next;
         refreshedAt.clear(); leagueErrors.clear();
-        finalized.clear();                                         // a new league may have starters in games we already closed
+        // A new league may have starters in games we already closed. Reloading the same leagues (the error retry runs every
+        // minute) must not reopen them, or finished games are fetched again for nothing.
+        if (added) finalized.clear();
       },
       start() {
         if (running) return;

@@ -52,7 +52,7 @@ public final class OverlayService extends Service implements RemoteServer.Host {
     private RemoteServer server;
     private WindowManager windows;
     private Handler main;
-    private WebView web;
+    private volatile WebView web;                           // written on the main thread, read by RemoteServer's worker threads in command()
 
     @Override
     public void onCreate() {
@@ -76,7 +76,11 @@ public final class OverlayService extends Service implements RemoteServer.Host {
     public void onDestroy() {
         server.stop();
         if (web != null) {
-            windows.removeView(web);
+            try {
+                windows.removeView(web);
+            } catch (IllegalArgumentException gone) {
+                Log.w(TAG, "overlay window was already removed");   // permission revoked while it was up: still destroy the WebView
+            }
             web.destroy();
             web = null;
         }

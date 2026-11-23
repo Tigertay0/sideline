@@ -96,10 +96,13 @@
     // The box rests see-through so it doesn't hide the game, and goes solid for a while when something happens.
     function wake(ms) {
       box.classList.add('awake');
-      if (ui.sleep) win.clearTimeout(ui.sleep);
+      if (ui.sleep) { win.clearTimeout(ui.sleep); drop(ui.sleep); }
       ui.sleep = later(() => box.classList.remove('awake'), ms);
     }
-    const later = (fn, ms) => { const id = win.setTimeout(fn, ms); timers.push(id); return id; };
+    // `timers` only exists so destroy() can cancel what is still pending: a timer that has fired or been cleared comes back out,
+    // or a three-hour game would pile up thousands of dead ids.
+    const drop = (id) => { const i = timers.indexOf(id); if (i >= 0) timers.splice(i, 1); };
+    const later = (fn, ms) => { const id = win.setTimeout(() => { drop(id); fn(); }, ms); timers.push(id); return id; };
     const cfg = () => getConfig();
     const frameNow = () => ui.test || ui.frame;
     const multi = () => ui.tiles.length >= 2;
@@ -453,7 +456,7 @@
       layoutSig = sig;
       const wrap = $('#tiles');
       wrap.textContent = '';
-      lanes.forEach((ln, key) => { if (key !== 'g') lanes.delete(key); });
+      lanes.forEach((ln, key) => { if (key !== 'g') { ln.queue.length = 0; lanes.delete(key); } });   // the lane's DOM is gone: don't play into it
       if (tiles.length >= 2) {
         for (const t of tiles) {
           const el = doc.createElement('div');
@@ -483,7 +486,8 @@
     // The box also changes height with no render (the font arriving, a photo loading): moments sit on top of it, so re-measure.
     const sizer = win.ResizeObserver ? new win.ResizeObserver(() => place()) : null;
     if (sizer) sizer.observe(box);
-    if (tv) win.addEventListener('resize', () => { place(); render(); });
+    const onResize = () => { place(); render(); };
+    if (tv) win.addEventListener('resize', onResize);
 
     return {
       update(frame) { ui.frame = frame; render(); },
@@ -499,7 +503,14 @@
         later(() => card(c, null), 60);                            // let the sample rows land first, so the card grows from one
         later(() => { ui.test = null; render(); }, (isParty(c) ? PARTY_MS : 0) + (c.ttl_ms || 3600) + ENTER_MS + EXIT_MS + 600);
       },
-      destroy() { if (sizer) sizer.disconnect(); win.clearInterval(rotate); timers.forEach((t) => win.clearTimeout(t)); doc.removeEventListener('fullscreenchange', mount); host.remove(); },
+      destroy() {
+        if (sizer) sizer.disconnect();
+        win.clearInterval(rotate);
+        timers.forEach((t) => win.clearTimeout(t));
+        doc.removeEventListener('fullscreenchange', mount);
+        if (tv) win.removeEventListener('resize', onResize);
+        host.remove();
+      },
       host,
     };
   }

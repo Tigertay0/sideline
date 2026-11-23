@@ -88,6 +88,6 @@
     return parseCorePlays(await get(`${CORE}/events/${g}/competitions/${g}/plays?limit=${CORE_PAGE}&page=${Math.max(1, page | 0)}`));
   };
 
-  const api = { BASE, CORE, CORE_PAGE, fracLeft, parseScoreboard, parseSummary, fetchScoreboard, fetchGame, parseCorePlays, fetchCorePlays };
+  const api = { CORE_PAGE, fracLeft, parseScoreboard, parseSummary, fetchScoreboard, fetchGame, fetchCorePlays };
   if (typeof module !== 'undefined') module.exports = api; else (root.SL = root.SL || {}).espn = api;
 })(typeof self !== 'undefined' ? self : globalThis);
